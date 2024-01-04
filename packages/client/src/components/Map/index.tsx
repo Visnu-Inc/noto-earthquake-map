@@ -1,6 +1,4 @@
 import type { InfoJsonType } from "../../types";
-import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { LinearProgress } from "@mui/material";
 import React, {
   Children,
   ReactNode,
@@ -10,6 +8,14 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { Status, Wrapper } from "@googlemaps/react-wrapper";
+import {
+  LinearProgress,
+  AppBar,
+  Container,
+  Toolbar,
+  Typography
+} from "@mui/material";
 import { googleMap } from '../../constants'
 import { initMap, type InitMapOptions } from '../../lib/map'
 import { Info, type InfoProps } from './Info'
@@ -54,7 +60,24 @@ const MapContent = () => {
   }
 
   return (
-    <>
+    <div style={{ height: '100%' }}>
+      <AppBar>
+        <Container maxWidth="xl">
+          <Toolbar sx={{ display: 'flex' }} disableGutters>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              能登地震孤立地域情報まとめ
+            </Typography>
+            <Typography
+              variant="caption"
+              component="a"
+              href="https://docs.google.com/spreadsheets/d/1Wa3EltKUwq2-d8W8s6QlJ7TIEC83kc8131xuX9q_5OI/edit?pli=1#gid=0"
+              target="_blank"
+            >
+              更新元スプレッドシート
+            </Typography>
+          </Toolbar>
+        </Container>
+      </AppBar>
       <MapContainer
         mapOptions={{
           zoom: 10,
@@ -70,7 +93,7 @@ const MapContent = () => {
       >
       </MapContainer>
       <Info {...info} onClose={() => setInfo({ info: null, show: false })} />
-    </>
+    </div>
   )
 }
 
