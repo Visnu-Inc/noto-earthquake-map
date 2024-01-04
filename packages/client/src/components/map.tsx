@@ -1,3 +1,4 @@
+import type { ExtendedIsolationAreaInfo, IsolationAreaInfo, InfoJsonType } from "../types";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
 import { LinearProgress, Stack, Typography } from "@mui/material";
 import React, {
@@ -12,8 +13,7 @@ import React, {
   useState,
 } from "react";
 import { createRoot } from "react-dom/client";
-import TestData from "../info.json";
-import { ExtendedIsolationAreaInfo, IsolationAreaInfo } from "../type";
+import { googleMap, jsonFilePath } from '../constants'
 import { getCoordinate } from "../util/coordinate";
 
 const MapContainer = ({
@@ -71,7 +71,7 @@ export const DashboardMap = () => {
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <Wrapper
-        apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
+        apiKey={googleMap.apiKey}
         render={(status) => {
           if (status === Status.LOADING) {
             return <LinearProgress />;
@@ -106,13 +106,10 @@ const MapContent = () => {
   useEffect(() => {
     (async () => {
       if (!infoData) {
-        // const res = await fetch(
-        //   "https://noto-earthquake-info-data.visnu.io/info.json"
-        // );
-        // const data = await res.json();
-        const data = TestData;
+        const res = await fetch(jsonFilePath.info)
+        const data = await res.json() as { data: InfoJsonType[] }
         const extendData = await Promise.all(
-          data.map(async (d: any) => {
+          data.data.map(async (d) => {
             const coordinate = await getCoordinate({
               市町村: d.市町村,
               市町村2: d.市町村2,
