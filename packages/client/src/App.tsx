@@ -1,8 +1,8 @@
-import { DashboardMap } from "./components/map";
+import { DashboardMap } from "./components/Map"
 
 function App() {
   return (
-    <div>
+    <div style={{ height: '100%', width: '100%' }}>
       <DashboardMap />
     </div>
   );
