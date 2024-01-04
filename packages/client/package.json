@@ -2,9 +2,14 @@
   "private": true,
   "name": "client",
   "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@googlemaps/react-wrapper": "^1.1.35",
+    "@mui/material": "^5.15.3",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.28",
     "@types/react-dom": "^18.2.13",
+    "lru-cache": "^10.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0",
@@ -29,5 +34,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/google.maps": "^3.54.10"
   }
 }

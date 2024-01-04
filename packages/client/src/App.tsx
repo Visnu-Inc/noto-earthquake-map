@@ -1,7 +1,11 @@
-import React from 'react'
+import { DashboardMap } from "./components/map";
 
 function App() {
-  return (<div>app</div>)
+  return (
+    <div>
+      <DashboardMap />
+    </div>
+  );
 }
 
-export default App
+export default App;
