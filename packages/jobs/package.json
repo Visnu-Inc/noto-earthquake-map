@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "jobs",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "predev:create-json": "npm run build",
+    "dev:create-json": "JOB_NAME=create-json NODE_ENV=development node --env-file=.env ./build/src/index.js",
+    "build": "tsc --build tsconfig.json"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.485.0",
+    "csv": "^6.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3"
+  }
+}
