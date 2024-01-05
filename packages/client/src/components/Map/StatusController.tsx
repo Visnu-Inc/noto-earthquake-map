@@ -1,19 +1,37 @@
 import { useEffect, useState } from 'react'
+import { styled } from '@mui/material/styles'
 import {
   Card,
   CardContent,
+  CardActions,
   FormGroup,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Collapse,
+  IconButton,
+  type IconButtonProps
 } from '@mui/material'
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
 
 export type StatusControllerProps = {
   statusList: string[]
   onChange: (status: Record<string, boolean>) => void
 }
 
+const Expand = styled((props: IconButtonProps & { expand: boolean }) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+  marginLeft: 'auto',
+  transition: theme.transitions.create('transform', {
+    duration: theme.transitions.duration.shortest
+  })
+}))
+
 export const StatusController = ({ statusList, onChange }: StatusControllerProps) => {
   const [state, setState] = useState({})
+  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     const newState = statusList.reduce((acc, status) => {
@@ -28,21 +46,37 @@ export const StatusController = ({ statusList, onChange }: StatusControllerProps
     onChange(newState)
   }
 
+  const handleExpandClick = () => {
+    setExpanded(!expanded)
+  }
+
   return (
-    <Card sx={{ position: 'absolute', top: 64 + 16, right: 16, maxWidth: 480 }}>
-      <CardContent>
-      <FormGroup>
-        {statusList.map((status) => {
-          return (
-            <FormControlLabel
-              key={status}
-              control={<Checkbox defaultChecked size="small" name={status} onChange={handleChange} />}
-              label={status}
-            />
-          )
-        })}
-      </FormGroup>
-      </CardContent>
+    <Card sx={{ position: 'absolute', top: 64 + 16, right: 0, maxWidth: 480 }}>
+      <CardActions disableSpacing>
+        <Expand
+          expand={expanded}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <KeyboardDoubleArrowLeftIcon />
+        </Expand>
+      </CardActions>
+      <Collapse in={expanded} orientation="horizontal" timeout="auto" unmountOnExit>
+        <CardContent sx={{ visibility: expanded ? 'visible' : 'hidden' }}>
+          <FormGroup>
+            {statusList.map((status) => {
+              return (
+                <FormControlLabel
+                  key={status}
+                  control={<Checkbox defaultChecked size="small" name={status} onChange={handleChange} />}
+                  label={status}
+                />
+              )
+            })}
+          </FormGroup>
+        </CardContent>
+      </Collapse>
     </Card>
   )
 }
