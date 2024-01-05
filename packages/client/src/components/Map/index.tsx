@@ -19,6 +19,9 @@ import {
 import { googleMap } from '../../constants'
 import { initMap, type InitMapOptions } from '../../lib/map'
 import { Info, type InfoProps } from './Info'
+import { StatusController } from './StatusController'
+
+const getInfoProp = (feature: google.maps.Data.Feature, key: keyof InfoJsonType) => feature.getProperty(key) as string
 
 export const DashboardMap = () => {
   return (
@@ -39,21 +42,21 @@ export const DashboardMap = () => {
 const MapContent = () => {
   const mapRef = useRef<google.maps.Map>(null)
   const [info, setInfo] = useState<Pick<InfoProps, 'info' | 'show'>>({ info: null, show: false })
+  const [statusList, setStatusList] = useState<string[]>([])
 
   const handleClickData = (e) => {
-    const getProp = (key: keyof InfoJsonType) => e.feature.getProperty(key)
     setInfo({
       info: {
-        id: getProp('id'),
-        市町村: getProp('市町村'),
-        市町村2: getProp('市町村2'),
-        市町村3: getProp('市町村3'),
-        状況: getProp('状況'),
-        最終更新時刻: getProp('最終更新時刻'),
-        状態: getProp('状態'),
-        対応状況: getProp('対応状況'),
-        情報源: getProp('情報源'),
-        others: getProp('others')
+        id: getInfoProp(e.feature, 'id'),
+        市町村: getInfoProp(e.feature, '市町村'),
+        市町村2: getInfoProp(e.feature, '市町村2'),
+        市町村3: getInfoProp(e.feature, '市町村3'),
+        状況: getInfoProp(e.feature, '状況'),
+        最終更新時刻: getInfoProp(e.feature, '最終更新時刻'),
+        状態: getInfoProp(e.feature, '状態'),
+        対応状況: getInfoProp(e.feature, '対応状況'),
+        情報源: getInfoProp(e.feature, '情報源'),
+        others: getInfoProp(e.feature, 'others')
       },
       show: true
     })
@@ -86,28 +89,46 @@ const MapContent = () => {
           fullscreenControl: false,
           mapTypeControl: false,
         }}
-        mapRef={mapRef}
         onDataClick={(e) => {
           handleClickData(e)
         }}
+        onInitMap={({ map, data }) => {
+          mapRef.current = map
+          const statusSet = new Set<string>()
+          for (const item of data) {
+            item.状態 && statusSet.add(item.状態)
+          }
+          setStatusList(Array.from(statusSet))
+        }}
       >
       </MapContainer>
+      <StatusController
+        statusList={statusList}
+        onChange={(status) => {
+          mapRef.current.data.forEach((feature) => {
+            const s = getInfoProp(feature, '状態')
+            feature.setProperty('visible', status[s] === true)
+          })
+        }}
+      />
       <Info {...info} onClose={() => setInfo({ info: null, show: false })} />
     </div>
   )
 }
 
-const MapContainer = React.memo(({
-  children,
-  mapRef,
-  onDataClick,
-  mapOptions,
-}: {
+type MapContainerProps = {
   children?: ReactNode;
-  mapRef: React.MutableRefObject<google.maps.Map | null>
   onDataClick: InitMapOptions['onClickData']
   mapOptions: google.maps.MapOptions
-}) => {
+  onInitMap: (arg: Awaited<ReturnType<typeof initMap>>) => void
+}
+
+const MapContainer = React.memo(({
+  children,
+  onDataClick,
+  mapOptions,
+  onInitMap
+}: MapContainerProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -115,8 +136,8 @@ const MapContainer = React.memo(({
       onClickData: (e) => {
         onDataClick(e)
       }
-    }).then(({ map }) => {
-      mapRef.current = map
+    }).then(({ map, data }) => {
+      onInitMap({ map, data })
     })
   }, [])
 
@@ -124,7 +145,7 @@ const MapContainer = React.memo(({
     <div style={{ flexGrow: "1", height: "100%" }} ref={ref} id="map">
       {Children.map(children, (child) => {
         if (isValidElement(child)) {
-          return cloneElement(child, { map: mapRef.current } as any);
+          return cloneElement(child, { map: ref.current } as any);
         }
       })}
     </div>

@@ -1,6 +1,5 @@
 import type { InfoJsonType } from '../../types'
 import {
-  Stack,
   Card,
   CardHeader,
   CardContent,
