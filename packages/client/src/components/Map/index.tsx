@@ -21,7 +21,9 @@ import { initMap, type InitMapOptions } from '../../lib/map'
 import { Info, type InfoProps } from './Info'
 import { StatusController } from './StatusController'
 
-const getInfoProp = (feature: google.maps.Data.Feature, key: keyof InfoJsonType) => feature.getProperty(key) as string
+function getInfoProp<T extends keyof InfoJsonType>(feature: google.maps.Data.Feature, key: T) {
+  return feature.getProperty(key) as InfoJsonType[T]
+}
 
 export const DashboardMap = () => {
   return (
@@ -56,6 +58,7 @@ const MapContent = () => {
         状態: getInfoProp(e.feature, '状態'),
         対応状況: getInfoProp(e.feature, '対応状況'),
         情報源: getInfoProp(e.feature, '情報源'),
+        location: getInfoProp(e.feature, 'location'),
         others: getInfoProp(e.feature, 'others')
       },
       show: true
