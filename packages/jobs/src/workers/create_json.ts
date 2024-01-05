@@ -256,8 +256,17 @@ async function geocode(address: string) {
   return body
 }
 
-const locaitionCache = new Map<string, { lat: number, lng: number }>()
+const locaitionCache = new Map<string, { lat: number; lng: number }>()
+const staticLocationCache = new Map<string, { lat: number; lng: number}>([
+  ['ふれあい文化センター', { lat: 37.223401452148735, lng: 136.92195085502587 }]
+])
+
 async function getLocation(address: string) {
+  for (const [key, val] of staticLocationCache.entries()) {
+    if (address.includes(key)) {
+      return val
+    }
+  }
   const cached = locaitionCache.get(address)
   if (cached) {
     return cached
