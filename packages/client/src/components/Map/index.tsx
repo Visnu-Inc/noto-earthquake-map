@@ -79,7 +79,7 @@ const MapContent = () => {
               href="https://docs.google.com/spreadsheets/d/1Wa3EltKUwq2-d8W8s6QlJ7TIEC83kc8131xuX9q_5OI/edit?pli=1#gid=0"
               target="_blank"
             >
-              更新元スプレッドシート
+              更新元データ
             </Typography>
           </Toolbar>
         </Container>

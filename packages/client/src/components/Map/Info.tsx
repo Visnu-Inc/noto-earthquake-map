@@ -40,6 +40,7 @@ export const Info = ({ info, show, onClose }: InfoProps) => {
           <dd>
             <p style={{ margin: 0 }}>lat: {info.location.lat}</p>
             <p style={{ margin: 0 }}>lng: {info.location.lng}</p>
+            <a href={`https://www.google.com/maps?q=${info.location.lat},${info.location.lng}`} target='_blank'>Google Mapで開く</a>
           </dd>
         </dl>
       </CardContent>
