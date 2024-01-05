@@ -20,6 +20,7 @@ import { googleMap } from '../../constants'
 import { initMap, type InitMapOptions } from '../../lib/map'
 import { Info, type InfoProps } from './Info'
 import { StatusController } from './StatusController'
+import { Footer } from './Footer'
 
 function getInfoProp<T extends keyof InfoJsonType>(feature: google.maps.Data.Feature, key: T) {
   return feature.getProperty(key) as InfoJsonType[T]
@@ -66,7 +67,7 @@ const MapContent = () => {
   }
 
   return (
-    <div style={{ height: '100%' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <AppBar>
         <Container maxWidth="xl">
           <Toolbar sx={{ display: 'flex' }} disableGutters>
@@ -84,37 +85,40 @@ const MapContent = () => {
           </Toolbar>
         </Container>
       </AppBar>
-      <MapContainer
-        mapOptions={{
-          zoom: 10,
-          center: { lat: 37.148329127262755, lng: 136.91671174471176 },
-          streetViewControl: false,
-          fullscreenControl: false,
-          mapTypeControl: false,
-        }}
-        onDataClick={(e) => {
-          handleClickData(e)
-        }}
-        onInitMap={({ map, data }) => {
-          mapRef.current = map
-          const statusSet = new Set<string>()
-          for (const item of data) {
-            item.状態 && statusSet.add(item.状態)
-          }
-          setStatusList(Array.from(statusSet))
-        }}
-      >
-      </MapContainer>
-      <StatusController
-        statusList={statusList}
-        onChange={(status) => {
-          mapRef.current?.data.forEach((feature) => {
-            const s = getInfoProp(feature, '状態')
-            feature.setProperty('visible', status[s] === true)
-          })
-        }}
-      />
-      <Info {...info} onClose={() => setInfo({ info: null, show: false })} />
+      <div style={{ flexGrow: 1 }}>
+        <MapContainer
+          mapOptions={{
+            zoom: 10,
+            center: { lat: 37.148329127262755, lng: 136.91671174471176 },
+            streetViewControl: false,
+            fullscreenControl: false,
+            mapTypeControl: false,
+          }}
+          onDataClick={(e) => {
+            handleClickData(e)
+          }}
+          onInitMap={({ map, data }) => {
+            mapRef.current = map
+            const statusSet = new Set<string>()
+            for (const item of data) {
+              item.状態 && statusSet.add(item.状態)
+            }
+            setStatusList(Array.from(statusSet))
+          }}
+        >
+        </MapContainer>
+        <StatusController
+          statusList={statusList}
+          onChange={(status) => {
+            mapRef.current?.data.forEach((feature) => {
+              const s = getInfoProp(feature, '状態')
+              feature.setProperty('visible', status[s] === true)
+            })
+          }}
+        />
+        <Info {...info} onClose={() => setInfo({ info: null, show: false })} />
+      </div>
+      <Footer />
     </div>
   )
 }
