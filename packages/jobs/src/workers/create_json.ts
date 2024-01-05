@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { parse } from 'csv'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { CLOUDFLARE } from '../config.js'
+import { CLOUDFLARE, GOOLGE_MAP } from '../config.js'
 
 const s3 = new S3Client({
   region: 'auto',
@@ -74,6 +74,10 @@ async function createInfo(tmpdirPath: string) {
     対応状況: string
     見出し対象: string
     情報源: string
+    location: {
+      lat: number
+      lng: number 
+    } | null
     others: string
   }[] = []
 
@@ -87,6 +91,8 @@ async function createInfo(tmpdirPath: string) {
     const id = _id || before.id
     const 市町村 = _市町村 || before.市町村
     const 市町村2 = _市町村2 || before.市町村2
+
+    const location = await getLocation(`${市町村}${市町村2}${市町村3}`)
     data.push({
       id,
       市町村,
@@ -98,6 +104,7 @@ async function createInfo(tmpdirPath: string) {
       見出し対象,
       対応状況,
       情報源,
+      location,
       others: others.filter((e: unknown) => !!e).join('\n')
     })
     before.id = id
@@ -228,4 +235,44 @@ async function createStoreInfo(tmpdirPath: string) {
   }))
 
   return { data }
+}
+
+// https://developers.google.com/maps/documentation/geocoding/start?hl=ja
+async function geocode(address: string) {
+  const query = new URLSearchParams([
+    ['key', GOOLGE_MAP.API_KEY],
+    ['address', address]
+  ])
+  const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?${query.toString()}`)
+  if (!res.ok) {
+    return null
+  }
+  const body = await res.json() as {
+    status: string;
+    results: {
+      geometry: { location: { lat: number; lng: number } }
+    }[]
+  }
+  return body
+}
+
+const locaitionCache = new Map<string, { lat: number, lng: number }>()
+async function getLocation(address: string) {
+  const cached = locaitionCache.get(address)
+  if (cached) {
+    return cached
+  }
+  const body = await geocode(address)
+  if (!body) {
+    return null
+  }
+
+  const result = body.results[0]
+  if (!result || !result.geometry.location) {
+    return null
+  }
+
+  const location = result.geometry.location
+  locaitionCache.set(address, location)
+  return location
 }

@@ -9,11 +9,14 @@ export type InitMapOptions = {
 }
 
 async function convertProperty(item: InfoJsonType): Promise<InfoJsonType & google.maps.Data.StyleOptions & { coordinate: google.maps.LatLngLiteral }> {
-  const coordinate = await getCoordinate({
-    市町村: item.市町村,
-    市町村2: item.市町村2,
-    市町村3: item.市町村3,
-  })
+  let coordinate = item.location
+  if (!item.location) {
+    coordinate = await getCoordinate({
+      市町村: item.市町村,
+      市町村2: item.市町村2,
+      市町村3: item.市町村3,
+    })
+  }
 
   return {
     ...item,

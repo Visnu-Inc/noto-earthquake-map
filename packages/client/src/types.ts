@@ -8,6 +8,10 @@ export type InfoJsonType = {
   状態: string
   対応状況: string
   情報源: string
+  location: {
+    lat: number
+    lng: number
+  } | null
   others: string
 }
 

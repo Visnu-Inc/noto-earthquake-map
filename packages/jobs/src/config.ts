@@ -4,3 +4,7 @@ export const CLOUDFLARE = {
   SECRET_ACCESS_KEY: process.env.CLOUDFLARE_SECRET_ACCESS_KEY ?? '',
   R2_BUCKET: process.env.CLOUDFLARE_R2_BUCKET ?? ''
 } as const
+
+export const GOOLGE_MAP = {
+  API_KEY: process.env.GOOGLE_MAPS_API_KEY ?? ''
+}
