@@ -36,7 +36,7 @@ export const Info = ({ info, show, onClose }: InfoProps) => {
           <dt>対応状況</dt>
           <dd>{info.対応状況}</dd>
           <dt>情報源</dt>
-          <dd style={{ wordBreak: 'break-all' }}><a href={info.情報源} target='_blank'>{info.情報源}</a></dd>
+          <dd style={{ wordBreak: 'break-all' }}><a href={info.others} target='_blank'>{info.情報源}</a></dd>
         </dl>
       </CardContent>
     </Card>
