@@ -36,6 +36,11 @@ export const Info = ({ info, show, onClose }: InfoProps) => {
           <dd>{info.対応状況}</dd>
           <dt>情報源</dt>
           <dd style={{ wordBreak: 'break-all' }}><a href={info.情報源} target='_blank'>{info.情報源}</a></dd>
+          <dt>緯度経度（想定）</dt>
+          <dd>
+            <p style={{ margin: 0 }}>lat: {info.location.lat}</p>
+            <p style={{ margin: 0 }}>lng: {info.location.lng}</p>
+          </dd>
         </dl>
       </CardContent>
     </Card>

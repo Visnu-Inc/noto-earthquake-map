@@ -16,6 +16,7 @@ async function convertProperty(item: InfoJsonType): Promise<InfoJsonType & googl
       市町村2: item.市町村2,
       市町村3: item.市町村3,
     })
+    item.location = coordinate
   }
 
   return {
