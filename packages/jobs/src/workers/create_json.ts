@@ -258,7 +258,7 @@ async function geocode(address: string) {
 
 const locaitionCache = new Map<string, { lat: number; lng: number }>()
 const staticLocationCache = new Map<string, { lat: number; lng: number}>([
-  ['ふれあい文化センター', { lat: 37.223401452148735, lng: 136.92195085502587 }]
+  ['のとふれあい文化センター', { lat: 37.223401452148735, lng: 136.92195085502587 }]
 ])
 
 async function getLocation(address: string) {

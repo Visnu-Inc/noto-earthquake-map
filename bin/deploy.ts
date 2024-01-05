@@ -50,10 +50,7 @@ async function deployJobs(jobName: string) {
     throw Error('jobの名前が間違っています')
   }
 
-  const hasFlag = await hasDockerIamges(version, imageAndTag)
-  if (!hasFlag) {
-    dockerBuild('./packages/jobs/Dockerfile', imageAndTag, { cwd: path.resolve(__dirname, '../') })
-  }
+  dockerBuild('./packages/jobs/Dockerfile', imageAndTag, { cwd: path.resolve(__dirname, '../') })
   dockerPush(imageAndTag)
 
   // memo: 初回はupdateだと失敗するのでcreateと--set-env-varsに書き換える（あまり回数がないからコードには落としてない）
