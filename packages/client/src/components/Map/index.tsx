@@ -108,7 +108,7 @@ const MapContent = () => {
       <StatusController
         statusList={statusList}
         onChange={(status) => {
-          mapRef.current.data.forEach((feature) => {
+          mapRef.current?.data.forEach((feature) => {
             const s = getInfoProp(feature, '状態')
             feature.setProperty('visible', status[s] === true)
           })

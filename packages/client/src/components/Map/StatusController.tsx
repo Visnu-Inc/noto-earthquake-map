@@ -35,9 +35,11 @@ export const StatusController = ({ statusList, onChange }: StatusControllerProps
 
   useEffect(() => {
     const newState = statusList.reduce((acc, status) => {
-      return { ...acc, [status]: true }
+      const show = ['要支援', '状況不明'].some((e) => status.includes(e))
+      return { ...acc, [status]: show }
     }, {})
     setState(newState)
+    onChange(newState)
   }, [statusList])
 
   const handleChange = (event) => {
@@ -69,7 +71,7 @@ export const StatusController = ({ statusList, onChange }: StatusControllerProps
               return (
                 <FormControlLabel
                   key={status}
-                  control={<Checkbox defaultChecked size="small" name={status} onChange={handleChange} />}
+                  control={<Checkbox size="small" name={status} onChange={handleChange} checked={state[status]} />}
                   label={status}
                 />
               )
