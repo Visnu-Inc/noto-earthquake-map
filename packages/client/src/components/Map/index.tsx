@@ -75,14 +75,14 @@ const MapContent = () => {
       <AppBar>
         <Container maxWidth="xl">
           <Toolbar sx={{ display: "flex" }} disableGutters>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              令和6年能登半島地震 地域情報まとめ
+            <Typography component="div" sx={{ flexGrow: 1, wordBreak:"auto-phrase", fontSize:16 }}>
+              令和6年能登半島地震 <wbr/>孤立地域及び支援情報まとめ
             </Typography>
             <Stack>
               <Typography fontSize={10}>更新元データ</Typography>
               <Link
                 color="inherit"
-                fontSize={12}
+                fontSize={11}
                 href="https://docs.google.com/spreadsheets/d/1Wa3EltKUwq2-d8W8s6QlJ7TIEC83kc8131xuX9q_5OI/edit?pli=1#gid=0"
                 target="_blank"
               >
@@ -90,7 +90,7 @@ const MapContent = () => {
               </Link>
               <Link
                 color="inherit"
-                fontSize={12}
+                fontSize={11}
                 href="https://www.google.com/maps/d/u/0/edit?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30&usp=sharing"
                 target="_blank"
               >
