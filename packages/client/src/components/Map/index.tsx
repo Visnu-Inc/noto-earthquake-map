@@ -1,4 +1,11 @@
-import type { InfoJsonType } from "../../types";
+import { Status, Wrapper } from "@googlemaps/react-wrapper";
+import {
+  AppBar,
+  Container,
+  LinearProgress,
+  Toolbar,
+  Typography
+} from "@mui/material";
 import React, {
   Children,
   ReactNode,
@@ -8,19 +15,12 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import {
-  LinearProgress,
-  AppBar,
-  Container,
-  Toolbar,
-  Typography
-} from "@mui/material";
-import { googleMap } from '../../constants'
-import { initMap, type InitMapOptions } from '../../lib/map'
-import { Info, type InfoProps } from './Info'
-import { StatusController } from './StatusController'
-import { Footer } from './Footer'
+import { googleMap } from '../../constants';
+import { initMap, type InitMapOptions } from '../../lib/map';
+import type { InfoJsonType } from "../../types";
+import { Footer } from './Footer';
+import { Info, type InfoProps } from './Info';
+import { StatusController } from './StatusController';
 
 function getInfoProp<T extends keyof InfoJsonType>(feature: google.maps.Data.Feature, key: T) {
   return feature.getProperty(key) as InfoJsonType[T]
@@ -46,6 +46,8 @@ const MapContent = () => {
   const mapRef = useRef<google.maps.Map>(null)
   const [info, setInfo] = useState<Pick<InfoProps, 'info' | 'show'>>({ info: null, show: false })
   const [statusList, setStatusList] = useState<string[]>([])
+  const [showKikanActivity, setShowKikanActivity] = useState<boolean>(true);
+  const kikanActivityStatus = "各機関活動状況";
 
   const handleClickData = (e) => {
     setInfo({
@@ -103,9 +105,14 @@ const MapContent = () => {
             for (const item of data) {
               item.状態 && statusSet.add(item.状態)
             }
-            setStatusList(Array.from(statusSet))
+            statusSet.add(kikanActivityStatus);
+            setStatusList(Array.from(statusSet));
           }}
         >
+          <KikanActivityKmlLayer
+            map={mapRef.current}
+            visible={showKikanActivity}
+          />
         </MapContainer>
         <StatusController
           statusList={statusList}
@@ -114,14 +121,50 @@ const MapContent = () => {
               const s = getInfoProp(feature, '状態')
               feature.setProperty('visible', status[s] === true)
             })
+            setShowKikanActivity(status[kikanActivityStatus] === true);
           }}
         />
         <Info {...info} onClose={() => setInfo({ info: null, show: false })} />
       </div>
       <Footer />
     </div>
-  )
-}
+  );
+};
+
+// 各機関活動状況のKMLレイヤー
+const KikanActivityKmlLayer = ({
+  map,
+  visible,
+}: {
+  map: google.maps.Map;
+  visible: boolean;
+}) => {
+  const [kmlLayer, setKmlLayer] = useState<google.maps.KmlLayer | null>(null);
+
+  useEffect(() => {
+    if (!visible || kmlLayer || !map) return;
+    const layer = new google.maps.KmlLayer({
+      //　MyMapsのKMLファイル内から抜き出している
+      url: "https://www.google.com/maps/d/u/0/kml?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30",
+      preserveViewport: true,
+      map,
+    });
+    console.log("layer", layer)
+    setKmlLayer(layer);
+    return () => {
+      if (!kmlLayer) return;
+      kmlLayer.setMap(null);
+    };
+  }, [kmlLayer, map, visible]);
+
+  // toggle visible layer
+  useEffect(() => {
+    if (!kmlLayer) return;
+    kmlLayer.setMap(visible ? map : null);
+  }, [kmlLayer, map, visible]);
+
+  return null;
+};
 
 type MapContainerProps = {
   children?: ReactNode;
@@ -148,13 +191,14 @@ const MapContainer = React.memo(({
     })
   }, [])
 
-  return (
-    <div style={{ flexGrow: "1", height: "100%" }} ref={ref} id="map">
-      {Children.map(children, (child) => {
-        if (isValidElement(child)) {
-          return cloneElement(child, { map: ref.current } as any);
-        }
-      })}
-    </div>
-  )
-})
+    return (
+      <div style={{ flexGrow: "1", height: "100%" }} ref={ref} id="map">
+        {Children.map(children, (child) => {
+          if (isValidElement(child)) {
+            return cloneElement(child);
+          }
+        })}
+      </div>
+    );
+  }
+);
