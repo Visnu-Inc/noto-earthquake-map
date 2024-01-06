@@ -14,11 +14,14 @@ import {
   Typography
 } from '@mui/material'
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
+import { type DataSources, type StatusList } from '.';
 
 export type StatusControllerProps = {
-  statusList: string[]
-  onChange: (status: Record<string, boolean>) => void
-}
+  statusList: StatusList | null;
+  onChange: (status: Status) => void;
+};
+
+export type Status = Record<DataSources, Record<string, boolean>>;
 
 const Expand = styled((props: IconButtonProps & { expand: boolean }) => {
   const { expand, ...other } = props;
@@ -31,24 +34,36 @@ const Expand = styled((props: IconButtonProps & { expand: boolean }) => {
   })
 }))
 
-export const StatusController = ({ statusList, onChange }: StatusControllerProps) => {
-  const [state, setState] = useState({})
-  const [expanded, setExpanded] = useState(false)
+export const StatusController = ({
+  statusList,
+  onChange,
+}: StatusControllerProps) => {
+  const [state, setState] = useState<Status | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    const newState = statusList.reduce((acc, status) => {
-      const show = ['孤立・要支援', '状況不明', "各機関活動状況"].some((e) => status.includes(e))
-      return { ...acc, [status]: show }
-    }, {})
-    setState(newState)
-    onChange(newState)
-  }, [statusList])
+    if (!statusList) return;
+    const newState: Status = {} as Status;
+    newState.能登地震孤立地域情報まとめ =
+      statusList.能登地震孤立地域情報まとめ.reduce((acc, status) => {
+        const show = ["孤立・要支援", "状況不明"].some((e) =>
+          status.includes(e)
+        );
+        return { ...acc, [status]: show };
+      }, {});
+    newState["令和6年能登半島地震 各機関活動状況"] = { 各機関活動状況: true };
+    newState.Google = { 交通情報: false };
+    console.log(newState);
+    setState(newState);
+    onChange(newState);
+  }, [statusList]);
 
-  const handleChange = (event) => {
-    const newState = { ...state, [event.target.name]: event.target.checked }
-    setState(newState)
-    onChange(newState)
-  }
+  const handleChange = (key: DataSources, status: string, checked: boolean) => {
+    const newState: Status = { ...state };
+    newState[key][status] = checked;
+    setState(newState);
+    onChange(newState);
+  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded)
@@ -70,50 +85,42 @@ export const StatusController = ({ statusList, onChange }: StatusControllerProps
         <CardContent sx={{ visibility: expanded ? 'visible' : 'hidden' }}>
           <FormGroup>
             <Stack gap={3}>
-              <Stack>
-                <Typography fontWeight={600}>
-                  能登地震孤立地域情報まとめ
-                </Typography>
-                <Stack>
-                  {statusList
-                    .filter((v) => v !== "各機関活動状況")
-                    .map((status) => {
+              {!statusList || !state
+                ? null
+                : (Object.keys(statusList) as (keyof StatusList)[]).map(
+                    (key) => {
+                      const status = statusList[key];
                       return (
-                        <FormControlLabel
-                          key={status}
-                          control={
-                            <Checkbox
-                              size="small"
-                              name={status}
-                              onChange={handleChange}
-                              checked={state[status]}
-                            />
-                          }
-                          label={status}
-                        />
+                        <Stack key={key}>
+                          <Typography fontWeight={600}>{key}</Typography>
+                          <Stack>
+                            {status.map((s) => {
+                              return (
+                                <FormControlLabel
+                                  key={s}
+                                  control={
+                                    <Checkbox
+                                      size="small"
+                                      name={s}
+                                      onChange={(event) => {
+                                        handleChange(
+                                          key,
+                                          s,
+                                          event.target.checked
+                                        );
+                                      }}
+                                      checked={state[key][s]}
+                                    />
+                                  }
+                                  label={s}
+                                />
+                              );
+                            })}
+                          </Stack>
+                        </Stack>
                       );
-                    })}
-                </Stack>
-              </Stack>
-              <Stack>
-                <Typography fontWeight={600}>
-                  令和6年能登半島地震 各機関活動状況
-                </Typography>
-                <Stack>
-                  <FormControlLabel
-                    key={"各機関活動状況"}
-                    control={
-                      <Checkbox
-                        size="small"
-                        name={"各機関活動状況"}
-                        onChange={handleChange}
-                        checked={state["各機関活動状況"]}
-                      />
                     }
-                    label={"各機関活動状況"}
-                  />
-                </Stack>
-              </Stack>
+                  )}
             </Stack>
           </FormGroup>
         </CardContent>
