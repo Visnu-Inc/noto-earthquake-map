@@ -1,4 +1,4 @@
-import { Status, Wrapper } from "@googlemaps/react-wrapper";
+import { Status as GoogleMapsStatus, Wrapper } from "@googlemaps/react-wrapper";
 import {
   AppBar,
   Container,
@@ -22,7 +22,7 @@ import { initMap, type InitMapOptions } from '../../lib/map';
 import type { InfoJsonType } from "../../types";
 import { Footer } from './Footer';
 import { Info, type InfoProps } from './Info';
-import { StatusController } from './StatusController';
+import { StatusController, type Status } from "./StatusController";
 
 function getInfoProp<T extends keyof InfoJsonType>(feature: google.maps.Data.Feature, key: T) {
   return feature.getProperty(key) as InfoJsonType[T]
@@ -34,7 +34,7 @@ export const DashboardMap = () => {
       <Wrapper
         apiKey={googleMap.apiKey}
         render={(status) => {
-          if (status === Status.LOADING) {
+          if (status === GoogleMapsStatus.LOADING) {
             return <LinearProgress />;
           }
           return <MapContent />;
@@ -44,12 +44,18 @@ export const DashboardMap = () => {
   );
 };
 
+export type DataSources =
+  | "能登地震孤立地域情報まとめ"
+  | "令和6年能登半島地震 各機関活動状況"
+  | "Google";
+
+export type StatusList = Record<DataSources, string[]>;
+
 const MapContent = () => {
   const mapRef = useRef<google.maps.Map>(null)
   const [info, setInfo] = useState<Pick<InfoProps, 'info' | 'show'>>({ info: null, show: false })
-  const [statusList, setStatusList] = useState<string[]>([])
-  const [showKikanActivity, setShowKikanActivity] = useState<boolean>(true);
-  const kikanActivityStatus = "各機関活動状況";
+  const [statusList, setStatusList] = useState<StatusList | null>(null);
+  const [status, setStatus] = useState<Status | null>(null);
 
   const handleClickData = (e) => {
     setInfo({
@@ -68,8 +74,19 @@ const MapContent = () => {
         others: getInfoProp(e.feature, 'others')
       },
       show: true
-    })
-  }
+    });
+  };
+
+  useEffect(() => {
+    if (!status) return;
+    mapRef.current?.data.forEach((feature) => {
+      const s = getInfoProp(feature, "状態");
+      feature.setProperty(
+        "visible",
+        status.能登地震孤立地域情報まとめ[s] === true
+      );
+    });
+  }, [status]);
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -114,28 +131,33 @@ const MapContent = () => {
             handleClickData(e)
           }}
           onInitMap={({ map, data }) => {
-            mapRef.current = map
-            const statusSet = new Set<string>()
+            mapRef.current = map;
+            const list: StatusList = {} as StatusList;
+            const statusSet = new Set<string>();
             for (const item of data) {
-              item.状態 && statusSet.add(item.状態)
+              item.状態 && statusSet.add(item.状態);
             }
-            statusSet.add(kikanActivityStatus);
-            setStatusList(Array.from(statusSet));
+            list["能登地震孤立地域情報まとめ"] = Array.from(statusSet);
+            list["令和6年能登半島地震 各機関活動状況"] = ["各機関活動状況"];
+            list["Google"] = ["交通情報"];
+            setStatusList(list);
           }}
         >
           <KikanActivityKmlLayer
             map={mapRef.current}
-            visible={showKikanActivity}
+            visible={
+              status?.["令和6年能登半島地震 各機関活動状況"]["各機関活動状況"]
+            }
+          />
+          <TrafficLayer
+            map={mapRef.current}
+            visible={status?.Google["交通情報"]}
           />
         </MapContainer>
         <StatusController
           statusList={statusList}
           onChange={(status) => {
-            mapRef.current?.data.forEach((feature) => {
-              const s = getInfoProp(feature, '状態')
-              feature.setProperty('visible', status[s] === true)
-            })
-            setShowKikanActivity(status[kikanActivityStatus] === true);
+            setStatus(status);
           }}
         />
         <Info {...info} onClose={() => setInfo({ info: null, show: false })} />
@@ -175,6 +197,35 @@ const KikanActivityKmlLayer = ({
     if (!kmlLayer) return;
     kmlLayer.setMap(visible ? map : null);
   }, [kmlLayer, map, visible]);
+
+  return null;
+};
+
+const TrafficLayer = ({
+  map,
+  visible,
+}: {
+  map: google.maps.Map;
+  visible: boolean;
+}) => {
+  const [trafficLayer, setTrafficLayer] =
+    useState<google.maps.TrafficLayer | null>(null);
+
+  useEffect(() => {
+    if (!map || trafficLayer) return;
+    const layer = new google.maps.TrafficLayer();
+    setTrafficLayer(layer);
+    return () => {
+      if (!trafficLayer) return;
+      trafficLayer.setMap(null);
+    };
+  }, [map, trafficLayer]);
+
+  // toggle visible layer
+  useEffect(() => {
+    if (!trafficLayer) return;
+    trafficLayer.setMap(visible ? map : null);
+  }, [map, trafficLayer, visible]);
 
   return null;
 };
