@@ -3,8 +3,10 @@ import {
   AppBar,
   Container,
   LinearProgress,
+  Link,
+  Stack,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
 import React, {
   Children,
@@ -69,21 +71,32 @@ const MapContent = () => {
   }
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <AppBar>
         <Container maxWidth="xl">
-          <Toolbar sx={{ display: 'flex' }} disableGutters>
+          <Toolbar sx={{ display: "flex" }} disableGutters>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              能登地震孤立地域情報まとめ
+              令和6年能登半島地震 地域情報まとめ
             </Typography>
-            <Typography
-              variant="caption"
-              component="a"
-              href="https://docs.google.com/spreadsheets/d/1Wa3EltKUwq2-d8W8s6QlJ7TIEC83kc8131xuX9q_5OI/edit?pli=1#gid=0"
-              target="_blank"
-            >
-              更新元データ
-            </Typography>
+            <Stack>
+              <Typography fontSize={10}>更新元データ</Typography>
+              <Link
+                color="inherit"
+                fontSize={12}
+                href="https://docs.google.com/spreadsheets/d/1Wa3EltKUwq2-d8W8s6QlJ7TIEC83kc8131xuX9q_5OI/edit?pli=1#gid=0"
+                target="_blank"
+              >
+                能登地震孤立地域情報まとめ
+              </Link>
+              <Link
+                color="inherit"
+                fontSize={12}
+                href="https://www.google.com/maps/d/u/0/edit?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30&usp=sharing"
+                target="_blank"
+              >
+                令和6年能登半島地震　各機関活動状況
+              </Link>
+            </Stack>
           </Toolbar>
         </Container>
       </AppBar>
@@ -149,7 +162,6 @@ const KikanActivityKmlLayer = ({
       preserveViewport: true,
       map,
     });
-    console.log("layer", layer)
     setKmlLayer(layer);
     return () => {
       if (!kmlLayer) return;

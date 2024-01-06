@@ -9,7 +9,9 @@ import {
   Checkbox,
   Collapse,
   IconButton,
-  type IconButtonProps
+  type IconButtonProps,
+  Stack,
+  Typography
 } from '@mui/material'
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
 
@@ -67,15 +69,52 @@ export const StatusController = ({ statusList, onChange }: StatusControllerProps
       <Collapse in={expanded} orientation="horizontal" timeout="auto" unmountOnExit>
         <CardContent sx={{ visibility: expanded ? 'visible' : 'hidden' }}>
           <FormGroup>
-            {statusList.map((status) => {
-              return (
-                <FormControlLabel
-                  key={status}
-                  control={<Checkbox size="small" name={status} onChange={handleChange} checked={state[status]} />}
-                  label={status}
-                />
-              )
-            })}
+            <Stack gap={3}>
+              <Stack>
+                <Typography fontWeight={600}>
+                  能登地震孤立地域情報まとめ
+                </Typography>
+                <Stack>
+                  {statusList
+                    .filter((v) => v !== "各機関活動状況")
+                    .map((status) => {
+                      return (
+                        <FormControlLabel
+                          key={status}
+                          control={
+                            <Checkbox
+                              size="small"
+                              name={status}
+                              onChange={handleChange}
+                              checked={state[status]}
+                            />
+                          }
+                          label={status}
+                        />
+                      );
+                    })}
+                </Stack>
+              </Stack>
+              <Stack>
+                <Typography fontWeight={600}>
+                  令和6年能登半島地震 各機関活動状況
+                </Typography>
+                <Stack>
+                  <FormControlLabel
+                    key={"各機関活動状況"}
+                    control={
+                      <Checkbox
+                        size="small"
+                        name={"各機関活動状況"}
+                        onChange={handleChange}
+                        checked={state["各機関活動状況"]}
+                      />
+                    }
+                    label={"各機関活動状況"}
+                  />
+                </Stack>
+              </Stack>
+            </Stack>
           </FormGroup>
         </CardContent>
       </Collapse>
