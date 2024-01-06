@@ -62,6 +62,7 @@ const MapContent = () => {
         最終更新時刻: getInfoProp(e.feature, '最終更新時刻'),
         状態: getInfoProp(e.feature, '状態'),
         対応状況: getInfoProp(e.feature, '対応状況'),
+        直近支援ニーズ: getInfoProp(e.feature, '直近支援ニーズ'),
         情報源: getInfoProp(e.feature, '情報源'),
         location: getInfoProp(e.feature, 'location'),
         others: getInfoProp(e.feature, 'others')

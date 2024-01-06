@@ -7,6 +7,7 @@ export type InfoJsonType = {
   最終更新時刻: string
   状態: string
   対応状況: string
+  直近支援ニーズ: string
   情報源: string
   location: {
     lat: number
