@@ -1,4 +1,13 @@
-import type { InfoJsonType } from "../../types";
+import { Status, Wrapper } from "@googlemaps/react-wrapper";
+import {
+  AppBar,
+  Container,
+  LinearProgress,
+  Link,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import React, {
   Children,
   ReactNode,
@@ -8,19 +17,12 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import {
-  LinearProgress,
-  AppBar,
-  Container,
-  Toolbar,
-  Typography
-} from "@mui/material";
-import { googleMap } from '../../constants'
-import { initMap, type InitMapOptions } from '../../lib/map'
-import { Info, type InfoProps } from './Info'
-import { StatusController } from './StatusController'
-import { Footer } from './Footer'
+import { googleMap } from '../../constants';
+import { initMap, type InitMapOptions } from '../../lib/map';
+import type { InfoJsonType } from "../../types";
+import { Footer } from './Footer';
+import { Info, type InfoProps } from './Info';
+import { StatusController } from './StatusController';
 
 function getInfoProp<T extends keyof InfoJsonType>(feature: google.maps.Data.Feature, key: T) {
   return feature.getProperty(key) as InfoJsonType[T]
@@ -46,6 +48,8 @@ const MapContent = () => {
   const mapRef = useRef<google.maps.Map>(null)
   const [info, setInfo] = useState<Pick<InfoProps, 'info' | 'show'>>({ info: null, show: false })
   const [statusList, setStatusList] = useState<string[]>([])
+  const [showKikanActivity, setShowKikanActivity] = useState<boolean>(true);
+  const kikanActivityStatus = "各機関活動状況";
 
   const handleClickData = (e) => {
     setInfo({
@@ -67,21 +71,32 @@ const MapContent = () => {
   }
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <AppBar>
         <Container maxWidth="xl">
-          <Toolbar sx={{ display: 'flex' }} disableGutters>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              能登地震孤立地域情報まとめ
+          <Toolbar sx={{ display: "flex" }} disableGutters>
+            <Typography component="div" sx={{ flexGrow: 1, wordBreak:"auto-phrase", fontSize:16 }}>
+              令和6年能登半島地震 <wbr/>孤立地域及び支援情報まとめ
             </Typography>
-            <Typography
-              variant="caption"
-              component="a"
-              href="https://docs.google.com/spreadsheets/d/1Wa3EltKUwq2-d8W8s6QlJ7TIEC83kc8131xuX9q_5OI/edit?pli=1#gid=0"
-              target="_blank"
-            >
-              更新元データ
-            </Typography>
+            <Stack>
+              <Typography fontSize={10}>更新元データ</Typography>
+              <Link
+                color="inherit"
+                fontSize={11}
+                href="https://docs.google.com/spreadsheets/d/1Wa3EltKUwq2-d8W8s6QlJ7TIEC83kc8131xuX9q_5OI/edit?pli=1#gid=0"
+                target="_blank"
+              >
+                能登地震孤立地域情報まとめ
+              </Link>
+              <Link
+                color="inherit"
+                fontSize={11}
+                href="https://www.google.com/maps/d/u/0/edit?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30&usp=sharing"
+                target="_blank"
+              >
+                令和6年能登半島地震　各機関活動状況
+              </Link>
+            </Stack>
           </Toolbar>
         </Container>
       </AppBar>
@@ -103,9 +118,14 @@ const MapContent = () => {
             for (const item of data) {
               item.状態 && statusSet.add(item.状態)
             }
-            setStatusList(Array.from(statusSet))
+            statusSet.add(kikanActivityStatus);
+            setStatusList(Array.from(statusSet));
           }}
         >
+          <KikanActivityKmlLayer
+            map={mapRef.current}
+            visible={showKikanActivity}
+          />
         </MapContainer>
         <StatusController
           statusList={statusList}
@@ -114,14 +134,49 @@ const MapContent = () => {
               const s = getInfoProp(feature, '状態')
               feature.setProperty('visible', status[s] === true)
             })
+            setShowKikanActivity(status[kikanActivityStatus] === true);
           }}
         />
         <Info {...info} onClose={() => setInfo({ info: null, show: false })} />
       </div>
       <Footer />
     </div>
-  )
-}
+  );
+};
+
+// 各機関活動状況のKMLレイヤー
+const KikanActivityKmlLayer = ({
+  map,
+  visible,
+}: {
+  map: google.maps.Map;
+  visible: boolean;
+}) => {
+  const [kmlLayer, setKmlLayer] = useState<google.maps.KmlLayer | null>(null);
+
+  useEffect(() => {
+    if (!visible || kmlLayer || !map) return;
+    const layer = new google.maps.KmlLayer({
+      //　MyMapsのKMLファイル内から抜き出している
+      url: "https://www.google.com/maps/d/u/0/kml?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30",
+      preserveViewport: true,
+      map,
+    });
+    setKmlLayer(layer);
+    return () => {
+      if (!kmlLayer) return;
+      kmlLayer.setMap(null);
+    };
+  }, [kmlLayer, map, visible]);
+
+  // toggle visible layer
+  useEffect(() => {
+    if (!kmlLayer) return;
+    kmlLayer.setMap(visible ? map : null);
+  }, [kmlLayer, map, visible]);
+
+  return null;
+};
 
 type MapContainerProps = {
   children?: ReactNode;
@@ -148,13 +203,14 @@ const MapContainer = React.memo(({
     })
   }, [])
 
-  return (
-    <div style={{ flexGrow: "1", height: "100%" }} ref={ref} id="map">
-      {Children.map(children, (child) => {
-        if (isValidElement(child)) {
-          return cloneElement(child, { map: ref.current } as any);
-        }
-      })}
-    </div>
-  )
-})
+    return (
+      <div style={{ flexGrow: "1", height: "100%" }} ref={ref} id="map">
+        {Children.map(children, (child) => {
+          if (isValidElement(child)) {
+            return cloneElement(child);
+          }
+        })}
+      </div>
+    );
+  }
+);
