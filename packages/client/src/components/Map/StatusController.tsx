@@ -35,7 +35,7 @@ export const StatusController = ({ statusList, onChange }: StatusControllerProps
 
   useEffect(() => {
     const newState = statusList.reduce((acc, status) => {
-      const show = ['要支援', '状況不明'].some((e) => status.includes(e))
+      const show = ['孤立・要支援'].some((e) => status.includes(e))
       return { ...acc, [status]: show }
     }, {})
     setState(newState)
