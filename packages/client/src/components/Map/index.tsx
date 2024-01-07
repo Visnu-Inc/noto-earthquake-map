@@ -116,6 +116,14 @@ const MapContent = () => {
               >
                 令和6年能登半島地震　各機関活動状況
               </Link>
+              <Link
+                color="inherit"
+                fontSize={11}
+                href="https://www.google.com/maps/d/u/0/viewer?mid=17UWU-Rmje_Ul31o7w4fQlbgF3NN-954&ll=36.94456041479502%2C137.06082638258303&z=10"
+                target="_blank"
+              >
+               R6能登半島地震応急給水拠点
+              </Link>
             </Stack>
           </Toolbar>
         </Container>
