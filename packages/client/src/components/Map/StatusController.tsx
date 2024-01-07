@@ -52,8 +52,8 @@ export const StatusController = ({
         return { ...acc, [status]: show };
       }, {});
     newState["令和6年能登半島地震 各機関活動状況"] = { 各機関活動状況: true };
+    newState["R6能登半島地震応急給水拠点"] = { 応急給水拠点1月7日: false };
     newState.Google = { 交通情報: false };
-    console.log(newState);
     setState(newState);
     onChange(newState);
   }, [statusList]);

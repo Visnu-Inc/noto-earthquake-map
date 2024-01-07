@@ -23,6 +23,7 @@ import type { InfoJsonType } from "../../types";
 import { Footer } from './Footer';
 import { Info, type InfoProps } from './Info';
 import { StatusController, type Status } from "./StatusController";
+import { KmlLayer, TrafficLayer } from "./layer";
 
 function getInfoProp<T extends keyof InfoJsonType>(feature: google.maps.Data.Feature, key: T) {
   return feature.getProperty(key) as InfoJsonType[T]
@@ -47,6 +48,7 @@ export const DashboardMap = () => {
 export type DataSources =
   | "能登地震孤立地域情報まとめ"
   | "令和6年能登半島地震 各機関活動状況"
+  | "R6能登半島地震応急給水拠点"
   | "Google";
 
 export type StatusList = Record<DataSources, string[]>;
@@ -114,6 +116,14 @@ const MapContent = () => {
               >
                 令和6年能登半島地震　各機関活動状況
               </Link>
+              <Link
+                color="inherit"
+                fontSize={11}
+                href="https://www.google.com/maps/d/u/0/viewer?mid=17UWU-Rmje_Ul31o7w4fQlbgF3NN-954&ll=36.94456041479502%2C137.06082638258303&z=10"
+                target="_blank"
+              >
+               R6能登半島地震応急給水拠点
+              </Link>
             </Stack>
           </Toolbar>
         </Container>
@@ -139,15 +149,22 @@ const MapContent = () => {
             }
             list["能登地震孤立地域情報まとめ"] = Array.from(statusSet);
             list["令和6年能登半島地震 各機関活動状況"] = ["各機関活動状況"];
+            list["R6能登半島地震応急給水拠点"] = ["応急給水拠点1月7日"];
             list["Google"] = ["交通情報"];
             setStatusList(list);
           }}
         >
-          <KikanActivityKmlLayer
+          <KmlLayer
+            layerUrl="https://www.google.com/maps/d/u/0/kml?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30"
             map={mapRef.current}
             visible={
               status?.["令和6年能登半島地震 各機関活動状況"]["各機関活動状況"]
             }
+          />
+          <KmlLayer
+            layerUrl="https://www.google.com/maps/d/u/0/kml?mid=17UWU-Rmje_Ul31o7w4fQlbgF3NN-954&lid=uss0GxUzELk"
+            map={mapRef.current}
+            visible={status?.["R6能登半島地震応急給水拠点"]["応急給水拠点1月7日"]}
           />
           <TrafficLayer
             map={mapRef.current}
@@ -165,69 +182,6 @@ const MapContent = () => {
       <Footer />
     </div>
   );
-};
-
-// 各機関活動状況のKMLレイヤー
-const KikanActivityKmlLayer = ({
-  map,
-  visible,
-}: {
-  map: google.maps.Map;
-  visible: boolean;
-}) => {
-  const [kmlLayer, setKmlLayer] = useState<google.maps.KmlLayer | null>(null);
-
-  useEffect(() => {
-    if (!visible || kmlLayer || !map) return;
-    const layer = new google.maps.KmlLayer({
-      //　MyMapsのKMLファイル内から抜き出している
-      url: "https://www.google.com/maps/d/u/0/kml?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30",
-      preserveViewport: true,
-      map,
-    });
-    setKmlLayer(layer);
-    return () => {
-      if (!kmlLayer) return;
-      kmlLayer.setMap(null);
-    };
-  }, [kmlLayer, map, visible]);
-
-  // toggle visible layer
-  useEffect(() => {
-    if (!kmlLayer) return;
-    kmlLayer.setMap(visible ? map : null);
-  }, [kmlLayer, map, visible]);
-
-  return null;
-};
-
-const TrafficLayer = ({
-  map,
-  visible,
-}: {
-  map: google.maps.Map;
-  visible: boolean;
-}) => {
-  const [trafficLayer, setTrafficLayer] =
-    useState<google.maps.TrafficLayer | null>(null);
-
-  useEffect(() => {
-    if (!map || trafficLayer) return;
-    const layer = new google.maps.TrafficLayer();
-    setTrafficLayer(layer);
-    return () => {
-      if (!trafficLayer) return;
-      trafficLayer.setMap(null);
-    };
-  }, [map, trafficLayer]);
-
-  // toggle visible layer
-  useEffect(() => {
-    if (!trafficLayer) return;
-    trafficLayer.setMap(visible ? map : null);
-  }, [map, trafficLayer, visible]);
-
-  return null;
 };
 
 type MapContainerProps = {
