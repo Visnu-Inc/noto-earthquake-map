@@ -148,17 +148,17 @@ const MapContent = () => {
               item.状態 && statusSet.add(item.状態);
             }
             list["能登地震孤立地域情報まとめ"] = Array.from(statusSet);
-            list["令和6年能登半島地震 各機関活動状況"] = ["各機関活動状況"];
+            list["令和6年能登半島地震 各機関活動状況"] = ["1月6日23時時点"];
             list["R6能登半島地震応急給水拠点"] = ["応急給水拠点1月7日"];
             list["Google"] = ["交通情報"];
             setStatusList(list);
           }}
         >
           <KmlLayer
-            layerUrl="https://www.google.com/maps/d/u/0/kml?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30"
+            layerUrl="https://www.google.com/maps/d/u/0/kml?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30&lid=PX_ylrtbF7A"
             map={mapRef.current}
             visible={
-              status?.["令和6年能登半島地震 各機関活動状況"]["各機関活動状況"]
+              status?.["令和6年能登半島地震 各機関活動状況"]["1月6日23時時点"]
             }
           />
           <KmlLayer
