@@ -1,4 +1,4 @@
-import type { InfoJsonType } from '../../types'
+import type { InfoJsonType } from '../../../types'
 import {
   Card,
   CardHeader,

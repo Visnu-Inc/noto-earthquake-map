@@ -6,12 +6,17 @@ import {
   RouterProvider,
 } from 'react-router-dom'
 import './index.css'
-import App from './App'
+import Map from './components/pages/Map/index'
+import Data from './components/pages/Data/index'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />
+    element: <Map />
+  },
+  {
+    path: '/data',
+    element: <Data />
   }
 ])
 
