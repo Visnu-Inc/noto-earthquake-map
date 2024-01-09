@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react'
-import { styled } from '@mui/material/styles'
+import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import {
   Card,
-  CardContent,
   CardActions,
-  FormGroup,
-  FormControlLabel,
+  CardContent,
   Checkbox,
   Collapse,
+  FormControlLabel,
+  FormGroup,
   IconButton,
-  type IconButtonProps,
   Stack,
-  Typography
-} from '@mui/material'
-import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
-import { type DataSources, type StatusList } from '.';
+  Typography,
+  type IconButtonProps,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { useEffect, useState } from "react";
+import { type DataSources, type StatusList } from ".";
 
 export type StatusControllerProps = {
   statusList: StatusList | null;
@@ -27,12 +27,12 @@ const Expand = styled((props: IconButtonProps & { expand: boolean }) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
 })(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest
-  })
-}))
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
 
 export const StatusController = ({
   statusList,
@@ -51,7 +51,7 @@ export const StatusController = ({
         );
         return { ...acc, [status]: show };
       }, {});
-    newState["令和6年能登半島地震 各機関活動状況"] = { "1月6日23時時点": true };
+    newState["令和6年能登半島地震 各機関活動状況"] = { 各機関活動状況: true };
     newState["R6能登半島地震応急給水拠点"] = { 応急給水拠点1月7日: false };
     newState.Google = { 交通情報: false };
     setState(newState);
@@ -66,11 +66,11 @@ export const StatusController = ({
   };
 
   const handleExpandClick = () => {
-    setExpanded(!expanded)
-  }
+    setExpanded(!expanded);
+  };
 
   return (
-    <Card sx={{ position: 'absolute', top: 64 + 16, right: 0, maxWidth: 480 }}>
+    <Card sx={{ position: "absolute", top: 64 + 16, right: 0, maxWidth: 480 }}>
       <CardActions disableSpacing>
         <Expand
           expand={expanded}
@@ -81,8 +81,13 @@ export const StatusController = ({
           <KeyboardDoubleArrowLeftIcon />
         </Expand>
       </CardActions>
-      <Collapse in={expanded} orientation="horizontal" timeout="auto" unmountOnExit>
-        <CardContent sx={{ visibility: expanded ? 'visible' : 'hidden' }}>
+      <Collapse
+        in={expanded}
+        orientation="horizontal"
+        timeout="auto"
+        unmountOnExit
+      >
+        <CardContent sx={{ visibility: expanded ? "visible" : "hidden" }}>
           <FormGroup>
             <Stack gap={3}>
               {!statusList || !state
@@ -126,5 +131,5 @@ export const StatusController = ({
         </CardContent>
       </Collapse>
     </Card>
-  )
-}
+  );
+};

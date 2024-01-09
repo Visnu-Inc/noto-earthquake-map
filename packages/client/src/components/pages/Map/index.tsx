@@ -9,16 +9,19 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { googleMap } from '../../../constants';
-import { initMap, type InitMapOptions } from '../../../lib/map';
+import { googleMap } from "../../../constants";
+import { initMap, type InitMapOptions } from "../../../lib/map";
 import type { InfoJsonType } from "../../../types";
-import { Layout } from '../../Layout'
-import { Info, type InfoProps } from './Info';
+import { Layout } from "../../Layout";
+import { Info, type InfoProps } from "./Info";
 import { StatusController, type Status } from "./StatusController";
 import { KmlLayer, TrafficLayer } from "./layer";
 
-function getInfoProp<T extends keyof InfoJsonType>(feature: google.maps.Data.Feature, key: T) {
-  return feature.getProperty(key) as InfoJsonType[T]
+function getInfoProp<T extends keyof InfoJsonType>(
+  feature: google.maps.Data.Feature,
+  key: T
+) {
+  return feature.getProperty(key) as InfoJsonType[T];
 }
 
 export default function DashboardMap() {
@@ -35,7 +38,7 @@ export default function DashboardMap() {
       ></Wrapper>
     </Layout>
   );
-};
+}
 
 export type DataSources =
   | "能登地震孤立地域情報まとめ"
@@ -46,28 +49,31 @@ export type DataSources =
 export type StatusList = Record<DataSources, string[]>;
 
 const MapContent = () => {
-  const mapRef = useRef<google.maps.Map>(null)
-  const [info, setInfo] = useState<Pick<InfoProps, 'info' | 'show'>>({ info: null, show: false })
+  const mapRef = useRef<google.maps.Map>(null);
+  const [info, setInfo] = useState<Pick<InfoProps, "info" | "show">>({
+    info: null,
+    show: false,
+  });
   const [statusList, setStatusList] = useState<StatusList | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
 
   const handleClickData = (e) => {
     setInfo({
       info: {
-        id: getInfoProp(e.feature, 'id'),
-        市町村: getInfoProp(e.feature, '市町村'),
-        市町村2: getInfoProp(e.feature, '市町村2'),
-        市町村3: getInfoProp(e.feature, '市町村3'),
-        状況: getInfoProp(e.feature, '状況'),
-        最終更新時刻: getInfoProp(e.feature, '最終更新時刻'),
-        状態: getInfoProp(e.feature, '状態'),
-        対応状況: getInfoProp(e.feature, '対応状況'),
-        直近支援ニーズ: getInfoProp(e.feature, '直近支援ニーズ'),
-        情報源: getInfoProp(e.feature, '情報源'),
-        location: getInfoProp(e.feature, 'location'),
-        others: getInfoProp(e.feature, 'others')
+        id: getInfoProp(e.feature, "id"),
+        市町村: getInfoProp(e.feature, "市町村"),
+        市町村2: getInfoProp(e.feature, "市町村2"),
+        市町村3: getInfoProp(e.feature, "市町村3"),
+        状況: getInfoProp(e.feature, "状況"),
+        最終更新時刻: getInfoProp(e.feature, "最終更新時刻"),
+        状態: getInfoProp(e.feature, "状態"),
+        対応状況: getInfoProp(e.feature, "対応状況"),
+        直近支援ニーズ: getInfoProp(e.feature, "直近支援ニーズ"),
+        情報源: getInfoProp(e.feature, "情報源"),
+        location: getInfoProp(e.feature, "location"),
+        others: getInfoProp(e.feature, "others"),
       },
-      show: true
+      show: true,
     });
   };
 
@@ -93,7 +99,7 @@ const MapContent = () => {
           mapTypeControl: false,
         }}
         onDataClick={(e) => {
-          handleClickData(e)
+          handleClickData(e);
         }}
         onInitMap={({ map, data }) => {
           mapRef.current = map;
@@ -103,17 +109,17 @@ const MapContent = () => {
             item.状態 && statusSet.add(item.状態);
           }
           list["能登地震孤立地域情報まとめ"] = Array.from(statusSet);
-          list["令和6年能登半島地震 各機関活動状況"] = ["1月6日23時時点"];
+          list["令和6年能登半島地震 各機関活動状況"] = ["各機関活動状況"];
           list["R6能登半島地震応急給水拠点"] = ["応急給水拠点1月7日"];
           list["Google"] = ["交通情報"];
           setStatusList(list);
         }}
       >
         <KmlLayer
-          layerUrl="https://www.google.com/maps/d/u/0/kml?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30&lid=PX_ylrtbF7A"
+          layerUrl="https://www.google.com/maps/d/u/0/kml?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30"
           map={mapRef.current}
           visible={
-            status?.["令和6年能登半島地震 各機関活動状況"]["1月6日23時時点"]
+            status?.["令和6年能登半島地震 各機関活動状況"]["各機関活動状況"]
           }
         />
         <KmlLayer
@@ -139,28 +145,24 @@ const MapContent = () => {
 
 type MapContainerProps = {
   children?: ReactNode;
-  onDataClick: InitMapOptions['onClickData']
-  mapOptions: google.maps.MapOptions
-  onInitMap: (arg: Awaited<ReturnType<typeof initMap>>) => void
-}
+  onDataClick: InitMapOptions["onClickData"];
+  mapOptions: google.maps.MapOptions;
+  onInitMap: (arg: Awaited<ReturnType<typeof initMap>>) => void;
+};
 
-const MapContainer = React.memo(({
-  children,
-  onDataClick,
-  mapOptions,
-  onInitMap
-}: MapContainerProps) => {
-  const ref = useRef<HTMLDivElement>(null);
+const MapContainer = React.memo(
+  ({ children, onDataClick, mapOptions, onInitMap }: MapContainerProps) => {
+    const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    initMap(ref.current, mapOptions, {
-      onClickData: (e) => {
-        onDataClick(e)
-      }
-    }).then(({ map, data }) => {
-      onInitMap({ map, data })
-    })
-  }, [])
+    useEffect(() => {
+      initMap(ref.current, mapOptions, {
+        onClickData: (e) => {
+          onDataClick(e);
+        },
+      }).then(({ map, data }) => {
+        onInitMap({ map, data });
+      });
+    }, []);
 
     return (
       <div style={{ flexGrow: "1", height: "100%" }} ref={ref} id="map">

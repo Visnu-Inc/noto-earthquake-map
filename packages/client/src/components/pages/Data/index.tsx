@@ -1,11 +1,6 @@
-import {
-  Link as MuiLink,
-  Stack,
-  Box,
-  Typography,
-} from '@mui/material'
-import { Layout } from '../../Layout'
-import { Link } from '../../atoms/Link'
+import { Link as MuiLink, Stack, Box, Typography } from "@mui/material";
+import { Layout } from "../../Layout";
+import { Link } from "../../atoms/Link";
 
 export default function Data() {
   return (
@@ -23,12 +18,12 @@ export default function Data() {
         </Box>
         <Box sx={{ mt: 1 }}>
           <MuiLink
-              color="inherit"
-              href="https://www.google.com/maps/d/u/0/edit?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30&usp=sharing"
-              target="_blank"
-            >
-              令和6年能登半島地震　各機関活動状況
-            </MuiLink>
+            color="inherit"
+            href="https://www.google.com/maps/d/u/0/viewer?mid=1PWNOtM4Zbmz-yr92ftQ6NQvp3K6fh30&ll=36.665837067784196%2C137.52761999999998&z=8"
+            target="_blank"
+          >
+            令和6年能登半島地震　各機関活動状況
+          </MuiLink>
         </Box>
         <Box sx={{ mt: 1 }}>
           <MuiLink
@@ -36,7 +31,7 @@ export default function Data() {
             href="https://www.google.com/maps/d/u/0/viewer?mid=17UWU-Rmje_Ul31o7w4fQlbgF3NN-954&ll=36.94456041479502%2C137.06082638258303&z=10"
             target="_blank"
           >
-          R6能登半島地震応急給水拠点
+            R6能登半島地震応急給水拠点
           </MuiLink>
         </Box>
         <Box sx={{ mt: 2 }}>
