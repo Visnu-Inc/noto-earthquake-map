@@ -17,7 +17,7 @@ export function Header() {
           </Link>
           <Stack>
             <Link to="/data">
-              <Typography fontSize={10} sx={{ minWidth: "64px" }}>
+              <Typography fontSize={14} sx={{ minWidth: "64px" }}>
                 更新元データ
               </Typography>
             </Link>
