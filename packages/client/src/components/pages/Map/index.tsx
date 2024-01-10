@@ -110,7 +110,7 @@ const MapContent = () => {
           }
           list["能登地震孤立地域情報まとめ"] = Array.from(statusSet);
           list["令和6年能登半島地震 各機関活動状況"] = ["各機関活動状況"];
-          list["R6能登半島地震応急給水拠点"] = ["応急給水拠点1月7日"];
+          list["R6能登半島地震応急給水拠点"] = ["応急給水拠点"];
           list["Google"] = ["交通情報"];
           setStatusList(list);
         }}
@@ -123,9 +123,9 @@ const MapContent = () => {
           }
         />
         <KmlLayer
-          layerUrl="https://www.google.com/maps/d/u/0/kml?mid=17UWU-Rmje_Ul31o7w4fQlbgF3NN-954&lid=uss0GxUzELk"
+          layerUrl="https://www.google.com/maps/d/u/0/kml?mid=1daKlXPEULq91w-PUMHZ9KSfwZTMRQxU"
           map={mapRef.current}
-          visible={status?.["R6能登半島地震応急給水拠点"]["応急給水拠点1月7日"]}
+          visible={status?.["R6能登半島地震応急給水拠点"]["応急給水拠点"]}
         />
         <TrafficLayer
           map={mapRef.current}
