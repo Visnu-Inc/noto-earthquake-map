@@ -68,6 +68,8 @@ async function createInfo(tmpdirPath: string) {
     市町村: string
     市町村2: string
     市町村3: string
+    人数: string
+    市把握: string
     状況: string
     最終更新時刻: string
     状態: string
@@ -88,7 +90,7 @@ async function createInfo(tmpdirPath: string) {
     市町村2: null
   }
   for await (const record of parser) {
-    const [_id, _市町村, _市町村2, 市町村3, 状況, 最終更新時刻, 状態, 見出し対象, 直近支援ニーズ, 対応状況, 情報源, ...others] = record
+    const [_id, _市町村, _市町村2, 市町村3, 人数, 市把握, 状況, 最終更新時刻, 状態, 見出し対象, 直近支援ニーズ, 対応状況, 情報源, ...others] = record
     const id = _id || before.id
     const 市町村 = _市町村 || before.市町村
     const 市町村2 = _市町村2 || before.市町村2
@@ -99,6 +101,8 @@ async function createInfo(tmpdirPath: string) {
       市町村,
       市町村2,
       市町村3,
+      人数,
+      市把握,
       状況,
       最終更新時刻,
       状態,
