@@ -31,7 +31,16 @@ export default function Data() {
             href="https://www.google.com/maps/d/u/0/viewer?mid=17UWU-Rmje_Ul31o7w4fQlbgF3NN-954&ll=36.94456041479502%2C137.06082638258303&z=10"
             target="_blank"
           >
-            R6能登半島地震応急給水拠点
+            R6能登半島地震応急給水拠点（日別）
+          </MuiLink>
+        </Box>
+        <Box sx={{ mt: 1 }}>
+          <MuiLink
+            color="inherit"
+            href="https://www.google.com/maps/d/u/0/viewer?fbclid=IwAR2YMn-qVvwSYGqXHK7k16OdcPLKOL6nbhwFF6TfnhSKcK1l6cNJLqC-v5c&mid=1daKlXPEULq91w-PUMHZ9KSfwZTMRQxU&ll=34.88624511297351%2C138.58368814941406&z=10"
+            target="_blank"
+          >
+            R6能登半島地震応急給水拠点（最新）
           </MuiLink>
         </Box>
         <Box sx={{ mt: 2 }}>
