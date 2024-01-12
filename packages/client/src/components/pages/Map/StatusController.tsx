@@ -13,15 +13,23 @@ import {
   type IconButtonProps,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { useEffect, useState } from "react";
-import { type DataSources, type StatusList } from ".";
+import { useState } from "react";
+import type { DataSources, StatusMap, StatusData } from "./types";
 
 export type StatusControllerProps = {
-  statusList: StatusList | null;
-  onChange: (status: Status) => void;
+  能登地震孤立地域情報まとめ: StatusData | null;
+  各機関活動状況: StatusData | null;
+  応急給水拠点: StatusData | null;
+  google: StatusData;
+  onChange能登地震孤立地域情報まとめ: (data: StatusData) => void;
+  onChange各機関活動状況: (data: StatusData) => void;
+  onChange応急給水拠点: (data: StatusData) => void;
+  onChangeGoogle: (data:StatusData) => void;
 };
 
-export type Status = Record<DataSources, Record<string, boolean>>;
+type StatusState = Record<string, boolean>
+
+export type StateMap = Record<DataSources, StatusState>;
 
 const Expand = styled((props: IconButtonProps & { expand: boolean }) => {
   const { expand, ...other } = props;
@@ -35,35 +43,16 @@ const Expand = styled((props: IconButtonProps & { expand: boolean }) => {
 }));
 
 export const StatusController = ({
-  statusList,
-  onChange,
+  能登地震孤立地域情報まとめ,
+  各機関活動状況,
+  応急給水拠点,
+  google,
+  onChange能登地震孤立地域情報まとめ,
+  onChange各機関活動状況,
+  onChange応急給水拠点,
+  onChangeGoogle,
 }: StatusControllerProps) => {
-  const [state, setState] = useState<Status | null>(null);
   const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    if (!statusList) return;
-    const newState: Status = {} as Status;
-    newState.能登地震孤立地域情報まとめ =
-      statusList.能登地震孤立地域情報まとめ.reduce((acc, status) => {
-        const show = ["孤立・要支援", "状況不明"].some((e) =>
-          status.includes(e)
-        );
-        return { ...acc, [status]: show };
-      }, {});
-    newState["令和6年能登半島地震 各機関活動状況"] = { 各機関活動状況: true };
-    newState["R6能登半島地震応急給水拠点"] = { 応急給水拠点: false };
-    newState.Google = { 交通情報: false };
-    setState(newState);
-    onChange(newState);
-  }, [statusList]);
-
-  const handleChange = (key: DataSources, status: string, checked: boolean) => {
-    const newState: Status = { ...state };
-    newState[key][status] = checked;
-    setState(newState);
-    onChange(newState);
-  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -90,42 +79,38 @@ export const StatusController = ({
         <CardContent sx={{ visibility: expanded ? "visible" : "hidden" }}>
           <FormGroup>
             <Stack gap={3}>
-              {!statusList || !state
-                ? null
-                : (Object.keys(statusList) as (keyof StatusList)[]).map(
-                    (key) => {
-                      const status = statusList[key];
-                      return (
-                        <Stack key={key}>
-                          <Typography fontWeight={600}>{key}</Typography>
-                          <Stack>
-                            {status.map((s) => {
-                              return (
-                                <FormControlLabel
-                                  key={s}
-                                  control={
-                                    <Checkbox
-                                      size="small"
-                                      name={s}
-                                      onChange={(event) => {
-                                        handleChange(
-                                          key,
-                                          s,
-                                          event.target.checked
-                                        );
-                                      }}
-                                      checked={state[key][s]}
-                                    />
-                                  }
-                                  label={s}
-                                />
-                              );
-                            })}
-                          </Stack>
-                        </Stack>
-                      );
-                    }
-                  )}
+              <Status
+                dataSource="能登地震孤立地域情報まとめ"
+                status={能登地震孤立地域情報まとめ}
+                onChange={(key, status, checked) => {
+                  能登地震孤立地域情報まとめ[status].checked = checked
+                  onChange能登地震孤立地域情報まとめ({ ...能登地震孤立地域情報まとめ })
+                }}
+              />
+              <Status
+                dataSource="各機関活動状況"
+                status={各機関活動状況}
+                onChange={(key, status, checked) => {
+                  各機関活動状況[status].checked = checked
+                  onChange各機関活動状況({ ...各機関活動状況 })
+                }}
+              />
+              <Status
+                dataSource="応急給水拠点"
+                status={応急給水拠点}
+                onChange={(key, status, checked) => {
+                  応急給水拠点[status].checked = checked
+                  onChange応急給水拠点({ ...応急給水拠点 })
+                }}
+              />
+              <Status
+                dataSource="Google"
+                status={google}
+                onChange={(key, status, checked) => {
+                  google[status].checked = checked
+                  onChangeGoogle({ ...google })
+                }}
+              />
             </Stack>
           </FormGroup>
         </CardContent>
@@ -133,3 +118,66 @@ export const StatusController = ({
     </Card>
   );
 };
+
+type StatusProps = {
+  dataSource: DataSources
+  status: StatusData | null
+  onChange: (dataSource: DataSources, key: string, checked: boolean) => void
+}
+
+function Status(props: StatusProps) {
+  return (
+    <Stack>
+      <Typography fontWeight={600}>{props.dataSource}</Typography>
+      <Stack>
+        {props.status && Object.entries(props.status).map(([key, val]) => {
+          return (
+            <StatusElem
+              key={key}
+              statusKey={key}
+              label={val.label}
+              status={val}
+              onChange={(k, checked) => {
+                props.onChange(
+                  props.dataSource,
+                  k,
+                  checked
+                )
+              }}
+            />
+          )
+        })}
+      </Stack>
+    </Stack>
+  )
+}
+
+type StatueElemProps = {
+  statusKey: string
+  label: string
+  status: StatusData[string]
+  onChange: (statusKey: string, checked: boolean) => void
+}
+
+function StatusElem(props: StatueElemProps) {
+  const name = props.status.layer?.getMetadata()?.name ?? props.label
+
+  return (
+    <FormControlLabel
+      control={
+        <Checkbox
+          size="small"
+          name={props.label}
+          onChange={(event) => {
+            props.onChange(
+              props.statusKey,
+              event.target.checked
+            );
+          }}
+          checked={props.status.checked}
+        />
+      }
+      label={name}
+    />
+  )
+}
