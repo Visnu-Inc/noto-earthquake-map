@@ -1,35 +1,19 @@
 import { useEffect, useState } from "react";
 
 export const KmlLayer = ({
-  layerUrl,
+  layer,
   map,
   visible,
 }: {
-  layerUrl: string;
+  layer: google.maps.KmlLayer;
   map: google.maps.Map;
   visible: boolean;
 }) => {
-  const [kmlLayer, setKmlLayer] = useState<google.maps.KmlLayer | null>(null);
-
-  useEffect(() => {
-    if (!visible || kmlLayer || !map) return;
-    const layer = new google.maps.KmlLayer({
-      url: layerUrl,
-      preserveViewport: true,
-      map,
-    });
-    setKmlLayer(layer);
-    return () => {
-      if (!kmlLayer) return;
-      kmlLayer.setMap(null);
-    };
-  }, [kmlLayer, map, visible]);
-
   // toggle visible layer
   useEffect(() => {
-    if (!kmlLayer) return;
-    kmlLayer.setMap(visible ? map : null);
-  }, [kmlLayer, map, visible]);
+    if (!layer) return;
+    layer.setMap(visible ? map : null);
+  }, [layer, map, visible]);
 
   return null;
 };
