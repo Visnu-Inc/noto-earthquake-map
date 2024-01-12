@@ -17,8 +17,14 @@ import { useState } from "react";
 import type { DataSources, StatusMap, StatusData } from "./types";
 
 export type StatusControllerProps = {
-  statusList: StatusMap | null;
-  onChange: (status: StatusMap) => void;
+  能登地震孤立地域情報まとめ: StatusData | null;
+  各機関活動状況: StatusData | null;
+  応急給水拠点: StatusData | null;
+  google: StatusData;
+  onChange能登地震孤立地域情報まとめ: (data: StatusData) => void;
+  onChange各機関活動状況: (data: StatusData) => void;
+  onChange応急給水拠点: (data: StatusData) => void;
+  onChangeGoogle: (data:StatusData) => void;
 };
 
 type StatusState = Record<string, boolean>
@@ -37,15 +43,16 @@ const Expand = styled((props: IconButtonProps & { expand: boolean }) => {
 }));
 
 export const StatusController = ({
-  statusList,
-  onChange,
+  能登地震孤立地域情報まとめ,
+  各機関活動状況,
+  応急給水拠点,
+  google,
+  onChange能登地震孤立地域情報まとめ,
+  onChange各機関活動状況,
+  onChange応急給水拠点,
+  onChangeGoogle,
 }: StatusControllerProps) => {
   const [expanded, setExpanded] = useState(false);
-
-  const handleChange = (key: DataSources, status: string, checked: boolean) => {
-    statusList[key][status].checked = checked
-    onChange({ ...statusList });
-  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -72,21 +79,38 @@ export const StatusController = ({
         <CardContent sx={{ visibility: expanded ? "visible" : "hidden" }}>
           <FormGroup>
             <Stack gap={3}>
-              {!statusList
-                ? null
-                : Object.keys(statusList).map((key) => {
-                      const status = statusList[key];
-                      return (
-                        <Status
-                          key={key}
-                          dataSource={key}
-                          status={status}
-                          onChange={handleChange}
-                        />
-                      );
-                    }
-                  )
-              }
+              <Status
+                dataSource="能登地震孤立地域情報まとめ"
+                status={能登地震孤立地域情報まとめ}
+                onChange={(key, status, checked) => {
+                  能登地震孤立地域情報まとめ[status].checked = checked
+                  onChange能登地震孤立地域情報まとめ({ ...能登地震孤立地域情報まとめ })
+                }}
+              />
+              <Status
+                dataSource="各機関活動状況"
+                status={各機関活動状況}
+                onChange={(key, status, checked) => {
+                  各機関活動状況[status].checked = checked
+                  onChange各機関活動状況({ ...各機関活動状況 })
+                }}
+              />
+              <Status
+                dataSource="応急給水拠点"
+                status={応急給水拠点}
+                onChange={(key, status, checked) => {
+                  応急給水拠点[status].checked = checked
+                  onChange応急給水拠点({ ...応急給水拠点 })
+                }}
+              />
+              <Status
+                dataSource="Google"
+                status={google}
+                onChange={(key, status, checked) => {
+                  google[status].checked = checked
+                  onChangeGoogle({ ...google })
+                }}
+              />
             </Stack>
           </FormGroup>
         </CardContent>
@@ -96,9 +120,9 @@ export const StatusController = ({
 };
 
 type StatusProps = {
-  dataSource: string
-  status: StatusData
-  onChange: (dataSource: string, key: string, checked: boolean) => void
+  dataSource: DataSources
+  status: StatusData | null
+  onChange: (dataSource: DataSources, key: string, checked: boolean) => void
 }
 
 function Status(props: StatusProps) {
@@ -106,7 +130,7 @@ function Status(props: StatusProps) {
     <Stack>
       <Typography fontWeight={600}>{props.dataSource}</Typography>
       <Stack>
-        {Object.entries(props.status).map(([key, val]) => {
+        {props.status && Object.entries(props.status).map(([key, val]) => {
           return (
             <StatusElem
               key={key}

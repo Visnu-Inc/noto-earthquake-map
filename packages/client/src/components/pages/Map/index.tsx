@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import type { StatusMap } from './types'
+import type { StatusMap, StatusData } from './types'
 import { googleMap } from "../../../constants";
 import { initMap, type InitMapOptions } from "../../../lib/map";
 import type { InfoJsonType } from "../../../types";
@@ -49,7 +49,16 @@ const MapContent = () => {
     info: null,
     show: false,
   });
-  const [statusMap, setStatusMap] = useState<StatusMap | null>(null);
+  const [能登地震孤立地域情報まとめ, set能登地震孤立地域情報まとめ] = useState<StatusData | null>(null);
+  const [各機関活動状況, set各機関活動状況] = useState<StatusData | null>(null);
+  const [応急給水拠点, set応急給水拠点] = useState<StatusData | null>(null);
+  const [google, setGoogle] = useState<StatusData>({
+    "交通情報": {
+      label: "交通情報",
+      layer: null,
+      checked: false
+    }
+  })
 
   const handleClickData = (e) => {
     setInfo({
@@ -72,15 +81,17 @@ const MapContent = () => {
   };
 
   useEffect(() => {
-    if (!statusMap) return;
+    if (!能登地震孤立地域情報まとめ) return;
     mapRef.current?.data.forEach((feature) => {
       const s = getInfoProp(feature, "状態");
       feature.setProperty(
         "visible",
-        statusMap.能登地震孤立地域情報まとめ[s]?.checked === true
+        能登地震孤立地域情報まとめ[s]?.checked === true
       );
     });
-  }, [statusMap]);
+  }, [能登地震孤立地域情報まとめ]);
+
+  const kml = { ...各機関活動状況, ...応急給水拠点 }
 
   return (
     <>
@@ -117,56 +128,58 @@ const MapContent = () => {
             }
           }, {} as StatusMap["能登地震孤立地域情報まとめ"])
 
-          const sMap: StatusMap = {
-            能登地震孤立地域情報まとめ,
+          set能登地震孤立地域情報まとめ(能登地震孤立地域情報まとめ)
+          set各機関活動状況({
             各機関活動状況: {
-              各機関活動状況: {
-                label: "各機関活動状況",
-                layer: layers["令和6年能登半島地震 各機関活動状況"],
-                checked: true
-              }
-            },
-            応急給水拠点: {
-              応急給水拠点: {
-                label: "応急給水拠点",
-                layer: layers['R6能登半島地震応急給水拠点'],
-                checked: false
-              }
-            },
-            Google: {
-              "交通情報": {
-                label: "交通情報",
-                layer: null,
-                checked: false
-              }
+              label: "各機関活動状況",
+              layer: layers["令和6年能登半島地震 各機関活動状況"],
+              checked: true
             }
-          };
-
-          setStatusMap(sMap);
+          })
+          set応急給水拠点({
+            応急給水拠点: {
+              label: "応急給水拠点",
+              layer: layers['R6能登半島地震応急給水拠点'],
+              checked: false
+            }
+          })
         }}
       >
-        <KmlLayer
-          layer={statusMap ? statusMap["各機関活動状況"]["各機関活動状況"].layer : null}
-          map={mapRef.current}
-          visible={
-            statusMap ? statusMap["各機関活動状況"]["各機関活動状況"].checked : false
-          }
-        />
-        <KmlLayer
-          layer={statusMap ? statusMap["応急給水拠点"]["応急給水拠点"].layer : null}
-          map={mapRef.current}
-          visible={
-            statusMap ? statusMap["応急給水拠点"]["応急給水拠点"].checked : false}
-        />
+        {
+          Object.entries(kml).map(([key, val]) => {
+            return (
+              <KmlLayer
+                key={key}
+                layer={val.layer}
+                map={mapRef.current}
+                visible={
+                  val.checked
+                }
+              />
+            )
+          })
+        }
         <TrafficLayer
           map={mapRef.current}
-          visible={statusMap?.Google["交通情報"].checked}
+          visible={google.交通情報.checked}
         />
       </MapContainer>
       <StatusController
-        statusList={statusMap}
-        onChange={(statusMap) => {
-          setStatusMap(statusMap)
+        能登地震孤立地域情報まとめ={能登地震孤立地域情報まとめ}
+        各機関活動状況={各機関活動状況}
+        応急給水拠点={応急給水拠点}
+        google={google}
+        onChange能登地震孤立地域情報まとめ={(data) => {
+          set能登地震孤立地域情報まとめ(data)
+        }}
+        onChange各機関活動状況={(data) => {
+          set各機関活動状況(data)
+        }}
+        onChange応急給水拠点={(data) => {
+          set応急給水拠点(data)
+        }}
+        onChangeGoogle={(data) => {
+          setGoogle(data)
         }}
       />
       <Info {...info} onClose={() => setInfo({ info: null, show: false })} />
