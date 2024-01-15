@@ -13,7 +13,7 @@ export default function Data() {
             href="https://docs.google.com/spreadsheets/d/1Wa3EltKUwq2-d8W8s6QlJ7TIEC83kc8131xuX9q_5OI/edit?pli=1#gid=0"
             target="_blank"
           >
-            能登地震孤立地域情報まとめ
+            能登地震孤立地域情報まとめ（更新停止）
           </MuiLink>
         </Box>
         <Box sx={{ mt: 1 }}>

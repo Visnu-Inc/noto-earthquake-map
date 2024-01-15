@@ -114,9 +114,12 @@ const MapContent = () => {
           }
 
           const 能登地震孤立地域情報まとめ = Array.from(statusSet).reduce((acc, status) => {
+            /*
             const checked = ["孤立・要支援", "状況不明"].some((e) =>
               status.includes(e)
             )
+            */
+           const checked = false
 
             return {
               ...acc,

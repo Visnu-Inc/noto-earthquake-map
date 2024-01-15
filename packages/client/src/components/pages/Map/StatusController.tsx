@@ -80,6 +80,7 @@ export const StatusController = ({
           <FormGroup>
             <Stack gap={3}>
               <Status
+                title="能登地震孤立地域情報まとめ（更新停止）"
                 dataSource="能登地震孤立地域情報まとめ"
                 status={能登地震孤立地域情報まとめ}
                 onChange={(key, status, checked) => {
@@ -120,6 +121,7 @@ export const StatusController = ({
 };
 
 type StatusProps = {
+  title?: string
   dataSource: DataSources
   status: StatusData | null
   onChange: (dataSource: DataSources, key: string, checked: boolean) => void
@@ -128,7 +130,7 @@ type StatusProps = {
 function Status(props: StatusProps) {
   return (
     <Stack>
-      <Typography fontWeight={600}>{props.dataSource}</Typography>
+      <Typography fontWeight={600}>{props.title ?? props.dataSource}</Typography>
       <Stack>
         {props.status && Object.entries(props.status).map(([key, val]) => {
           return (
